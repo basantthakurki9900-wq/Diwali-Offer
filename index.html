@@ -34,7 +34,7 @@
       overflow-x: hidden;
       position: relative;
       background-attachment: fixed;
-      padding-bottom: 80px;
+      padding-bottom: 30px;
     }
 
     #starCanvas {
@@ -164,11 +164,23 @@
     .ribbon { background: linear-gradient(to right, #4b0082, #8a2be2, #4b0082); border: 2px solid var(--gold); border-radius: 50px; padding: 8px 20px; text-align: center; margin-bottom: 20px; }
     .ribbon h3 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.4rem; color: var(--gold); text-shadow: 0 2px 4px #000; }
 
-    .action-buttons { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
-    .btn-premium { flex: 1; max-width: 160px; padding: 12px 10px; border-radius: 50px; border: 2px solid #fff; font-size: 0.9rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 5px 0 rgba(0,0,0,0.3), 0 8px 15px rgba(0,0,0,0.5); color: #fff; }
+    .action-buttons { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; align-items: stretch; }
+    .btn-premium { flex: 1; padding: 12px 10px; border-radius: 50px; border: 2px solid #fff; font-size: 0.85rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 5px 0 rgba(0,0,0,0.3), 0 8px 15px rgba(0,0,0,0.5); color: #fff; }
     .btn-premium:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,0.3); }
     .btn-spin { background: linear-gradient(to bottom, #FFD700, #FF8C00); color: #800000 !important; }
     .btn-refer { background: linear-gradient(to bottom, #E60000, #8B0000); }
+    .light-btn {
+      flex: 0 0 auto;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: linear-gradient(145deg, #444, #222);
+      border: 2px solid #555; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; transition: all 0.3s;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.3), 0 8px 15px rgba(0,0,0,0.5);
+    }
+    .light-btn.on { background: radial-gradient(circle, #FFD700, #FFA500); border-color: #FFD700; box-shadow: 0 0 20px #FFD700; }
+    .light-btn:hover { transform: scale(1.05); }
+    .light-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,0.3); }
 
     .ref-card { background: rgba(40, 0, 60, 0.9); border: 2px solid var(--gold); border-radius: 20px; padding: 15px; width: 100%; text-align: center; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
     .ref-card h4 { font-size: 1.1rem; color: var(--gold); margin-bottom: 5px; }
@@ -224,7 +236,7 @@
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     .toast.error { background: #ff3333; color: #fff; }
 
-    /* Image Gallery - Full Width (like top banner) */
+    /* Image Gallery - Full Width */
     .image-gallery { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
     .gallery-item { width: 100%; border-radius: 20px; overflow: hidden; border: 3px solid var(--gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); background: #000; }
     .gallery-item img { width: 100%; height: auto; display: block; object-fit: cover; max-height: 280px; }
@@ -252,11 +264,9 @@
     .track-text h4 { font-size: 0.85rem; color: #fff; }
     .track-text span { font-size: 0.7rem; color: #aaa; }
 
-    /* Bottom Bar */
-    .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(20, 0, 38, 0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--glass-border); padding: 10px 15px; display: flex; align-items: center; justify-content: center; gap: 15px; z-index: 100; }
-    .light-btn { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(145deg, #444, #222); border: 2px solid #555; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; transition: all 0.3s; }
-    .light-btn.on { background: radial-gradient(circle, #FFD700, #FFA500); border-color: #FFD700; box-shadow: 0 0 20px #FFD700; }
-    .light-btn:hover { transform: scale(1.05); }
+    /* Sync indicator */
+    .sync-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ff4444; margin-left: 5px; }
+    .sync-dot.online { background: #00ff00; box-shadow: 0 0 5px #00ff00; }
   </style>
 </head>
 <body>
@@ -265,7 +275,7 @@
 
   <header>
     <div class="logo-area">
-      <h1>Diwali Lucky Spin</h1>
+      <h1>Diwali Lucky Spin <span class="sync-dot" id="syncDot" title="Firebase connection"></span></h1>
     </div>
   </header>
 
@@ -296,8 +306,9 @@
     <div class="ribbon"><h3>✨ Happy Diwali ✨</h3></div>
 
     <div class="action-buttons">
-      <button class="btn-premium btn-spin" onclick="scrollToWheel()"><span>🎡</span> Spin Now</button>
-      <button class="btn-premium btn-refer" onclick="scrollToRefer()"><span>🎁</span> Refer & Unlock</button>
+      <button class="btn-premium btn-spin" onclick="scrollToWheel()"><span>🎡</span> Spin</button>
+      <button class="btn-premium btn-refer" onclick="scrollToRefer()"><span>🎁</span> Refer</button>
+      <button class="light-btn" id="adminLightBtn" onclick="toggleAdminLight()" title="Admin">💡</button>
     </div>
 
     <div class="ref-card" id="referBox">
@@ -342,10 +353,8 @@
       </div>
     </div>
 
-    <!-- Image Gallery -->
     <div class="image-gallery" id="imageGallery"></div>
 
-    <!-- Comments Section -->
     <div class="comments-section">
       <h3>💬 Customer Reviews</h3>
       <div id="commentsList"></div>
@@ -359,7 +368,6 @@
       </div>
     </div>
 
-    <!-- Track Section -->
     <div class="track-section" id="trackSection">
       <h3>📦 Order Tracking</h3>
       <p style="text-align:center; font-size:0.8rem; color:#aaa; margin-bottom:15px;">अपने ऑर्डर की स्थिति देखें</p>
@@ -420,7 +428,7 @@
 
   <div class="modal-overlay" id="adminLoginModal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModal('adminLoginModal')">×</button>
+      <button class="modal-close" onclick="closeModal('adminLoginModal'); resetAdminLight()">×</button>
       <h2 style="color:var(--gold); text-align:center; margin-bottom:15px;">🔐 Admin Login</h2>
       <form onsubmit="adminLogin(event)">
         <div class="form-group"><label>Username</label><input type="text" id="adminUser" required></div>
@@ -432,7 +440,7 @@
 
   <div class="modal-overlay" id="adminPanelModal" style="align-items:flex-start; padding-top:20px;">
     <div class="modal-content" style="max-width:600px; max-height:90vh;">
-      <button class="modal-close" onclick="closeModal('adminPanelModal')">×</button>
+      <button class="modal-close" onclick="closeModal('adminPanelModal'); resetAdminLight()">×</button>
       <h2 style="color:var(--gold); margin-bottom:15px;">⚙️ Admin Panel</h2>
 
       <div class="admin-tabs">
@@ -447,7 +455,9 @@
       <div id="tab-dash" class="admin-content active">
         <div class="stats-grid" id="adminStats"></div>
         <button class="btn-submit" onclick="adminFreeSpin()" style="background:#00cc44; color:#fff; margin-top:10px;">🎡 Free Spin (Testing)</button>
-        <button class="btn-submit" onclick="testFirebase()" style="background:#2196F3; color:#fff; margin-top:10px;">🔧 Test Firebase Connection</button>
+        <button class="btn-submit" onclick="testFirebase()" style="background:#2196F3; color:#fff; margin-top:10px;">🔧 Test Firebase</button>
+        <button class="btn-submit" onclick="forceSyncAll()" style="background:#9C27B0; color:#fff; margin-top:10px;">🔄 Force Sync to Firebase</button>
+        <p id="syncStatusText" style="text-align:center; font-size:0.75rem; color:#aaa; margin-top:10px;"></p>
       </div>
 
       <div id="tab-prizes" class="admin-content">
@@ -493,31 +503,25 @@
 
       <div id="tab-gallery" class="admin-content">
         <div class="form-group">
-          <label>Image URL Add करें</label>
-          <input type="url" id="galleryImageUrl" placeholder="https://...">
+          <label>Image URL Add करें (यह सभी users को दिखेगी)</label>
+          <input type="url" id="galleryImageUrl" placeholder="https://i.ibb.co/...">
         </div>
-        <button class="btn-submit" onclick="addGalleryImage()" style="margin-bottom:15px;">➕ Add Image</button>
+        <button class="btn-submit" onclick="addGalleryImage()" style="margin-bottom:15px;">➕ Add Image (Live)</button>
         <div id="adminGalleryList" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
 
       <div id="tab-settings" class="admin-content">
         <form onsubmit="saveSettings(event)">
-          <div class="form-group"><label>Top Banner Image (ImgBB Link)</label><input type="url" id="setTopImage" placeholder="https://i.ibb.co/..."></div>
+          <div class="form-group"><label>Top Banner Image URL</label><input type="url" id="setTopImage" placeholder="https://i.ibb.co/..."></div>
           <div class="form-group"><label>Referral Requirement</label><input type="number" id="setReferralReq" min="1" required></div>
           <div class="form-group"><label>Spin Enabled</label><select id="setSpinEnabled"><option value="true">Yes</option><option value="false">No</option></select></div>
-          <div class="form-group"><label>Referral Message Image URL</label><input type="url" id="setReferralImage" placeholder="https://..."></div>
-          <button type="submit" class="btn-submit">Save Settings</button>
+          <button type="submit" class="btn-submit">Save Settings (Live)</button>
         </form>
       </div>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
-
-  <!-- Bottom Bar with Light Button -->
-  <div class="bottom-bar">
-    <button class="light-btn" id="adminLightBtn" onclick="toggleAdminLight()">💡</button>
-  </div>
 
   <script>
     // ==========================================
@@ -530,8 +534,8 @@
       projectId: "depl-b3f42",
       storageBucket: "depl-b3f42.firebasestorage.app",
       messagingSenderId: "641886723392",
-      appId: "1:641886723392:web:2e9016c5611cbcc8552ea5",
-      measurementId: "G-YRWGQ0FQYE"
+      appId: "1:641886723392:web:b635b0f73b018f73552ea5",
+      measurementId: "G-RPKKP6RRPK"
     };
 
     const FIREBASE_DB_URL = FIREBASE_CONFIG.databaseURL;
@@ -539,17 +543,15 @@
     const ADMIN_CRED = { u: 'admin', p: 'diwali2024' };
 
     const KEYS = {
-      visitor: 'dls_vid_v7', refCode: 'dls_ref_v7', counted: 'dls_counted_v7',
-      localRefs: 'dls_localrefs_v7', spins: 'dls_spins_v7', used: 'dls_used_v7',
-      claims: 'dls_claims_v7', prizes: 'dls_prizes_v7', settings: 'dls_settings_v7',
-      comments: 'dls_comments_v7', gallery: 'dls_gallery_v7', referrerName: 'dls_refname_v7'
+      visitor: 'dls_vid_v8', refCode: 'dls_ref_v8', counted: 'dls_counted_v8',
+      localRefs: 'dls_localrefs_v8', used: 'dls_used_v8',
+      referrerName: 'dls_refname_v8'
     };
 
     const DEFAULT_SETTINGS = {
       refReq: 1,
       spinEnabled: true,
-      topImage: 'https://i.ibb.co/68z6Zk5/goddess-lakshmi.jpg',
-      referralImage: ''
+      topImage: 'https://i.ibb.co/68z6Zk5/goddess-lakshmi.jpg'
     };
 
     const DEFAULT_PRIZES = [
@@ -564,19 +566,20 @@
     ];
 
     const DEFAULT_COMMENTS = [
-      { id: '1', name: 'Rahul Sharma', text: 'मुझे लैपटॉप मिला है फ्री में! बहुत बढ़िया वेबसाइट है।', date: new Date().toISOString(), approved: true },
-      { id: '2', name: 'Priya Patel', text: 'मुझे मोबाइल मिला फ्री में! शानदार ऑफर है।', date: new Date().toISOString(), approved: true },
-      { id: '3', name: 'Amit Kumar', text: 'गोल्ड बिस्किट जीता! सच में दे रहे हैं।', date: new Date().toISOString(), approved: true },
-      { id: '4', name: 'Sneha Verma', text: 'कंप्यूटर मिला फ्री में! धन्यवाद दिवाली स्पिन।', date: new Date().toISOString(), approved: true },
-      { id: '5', name: 'Vikram Singh', text: '₹500 कैशबैक मिला! बहुत अच्छा है।', date: new Date().toISOString(), approved: true },
-      { id: '6', name: 'Anjali Gupta', text: 'मेरी बहन को मोबाइल मिला! सबको recommend करती हूं।', date: new Date().toISOString(), approved: true },
-      { id: '7', name: 'Rohit Yadav', text: 'लैपटॉप मिला! सपना सच हो गया।', date: new Date().toISOString(), approved: true },
-      { id: '8', name: 'Kavita Reddy', text: 'रीचार्ज फ्री मिला! बहुत खुश हूं।', date: new Date().toISOString(), approved: true },
-      { id: '9', name: 'Suresh Nair', text: 'गिफ्ट मिला! दिवाली यादगार बन गई।', date: new Date().toISOString(), approved: true },
-      { id: '10', name: 'Meena Joshi', text: 'गोल्ड बिस्किट मिला! असली सोना है।', date: new Date().toISOString(), approved: true }
+      { id: 'c1', name: 'Rahul Sharma', text: 'मुझे लैपटॉप मिला है फ्री में! बहुत बढ़िया वेबसाइट है।', date: new Date().toISOString(), approved: true },
+      { id: 'c2', name: 'Priya Patel', text: 'मुझे मोबाइल मिला फ्री में! शानदार ऑफर है।', date: new Date().toISOString(), approved: true },
+      { id: 'c3', name: 'Amit Kumar', text: 'गोल्ड बिस्किट जीता! सच में दे रहे हैं।', date: new Date().toISOString(), approved: true },
+      { id: 'c4', name: 'Sneha Verma', text: 'कंप्यूटर मिला फ्री में! धन्यवाद दिवाली स्पिन।', date: new Date().toISOString(), approved: true },
+      { id: 'c5', name: 'Vikram Singh', text: '₹500 कैशबैक मिला! बहुत अच्छा है।', date: new Date().toISOString(), approved: true },
+      { id: 'c6', name: 'Anjali Gupta', text: 'मेरी बहन को मोबाइल मिला! सबको recommend करती हूं।', date: new Date().toISOString(), approved: true },
+      { id: 'c7', name: 'Rohit Yadav', text: 'लैपटॉप मिला! सपना सच हो गया।', date: new Date().toISOString(), approved: true },
+      { id: 'c8', name: 'Kavita Reddy', text: 'रीचार्ज फ्री मिला! बहुत खुश हूं।', date: new Date().toISOString(), approved: true },
+      { id: 'c9', name: 'Suresh Nair', text: 'गिफ्ट मिला! दिवाली यादगार बन गई।', date: new Date().toISOString(), approved: true },
+      { id: 'c10', name: 'Meena Joshi', text: 'गोल्ड बिस्किट मिला! असली सोना है।', date: new Date().toISOString(), approved: true }
     ];
 
-    let visitorId, refCode, spins, claims, prizes, settings, comments, gallery;
+    let visitorId, refCode;
+    let spins = [], claims = [], prizes = [], settings = {}, comments = [], gallery = [];
     let usedSpins = 0;
     let myRefCount = 0;
     let spinning = false;
@@ -584,17 +587,13 @@
     let currentRotation = 0;
     let wheelPrizes = [];
     let adminLightOn = false;
+    let firebaseOnline = false;
 
     // ==========================================
     // UTILS
     // ==========================================
     const $ = id => document.getElementById(id);
     const genId = prefix => prefix + Math.random().toString(36).substring(2, 8).toUpperCase();
-
-    function getJSON(key, fallback) {
-      try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : fallback; } catch (e) { return fallback; }
-    }
-    function setJSON(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
 
     function showToast(msg, isErr = false) {
       const t = $('toast');
@@ -607,31 +606,114 @@
     function openModal(id) { $(id).classList.add('show'); }
     function closeModal(id) { $(id).classList.remove('show'); }
 
+    function setSyncDot(online) {
+      firebaseOnline = online;
+      const dot = $('syncDot');
+      if (dot) dot.classList.toggle('online', online);
+    }
+
     // ==========================================
-    // FIREBASE REST API
+    // FIREBASE REST API (सब live)
     // ==========================================
     const dbUrl = path => FIREBASE_DB_URL.replace(/\/$/, '') + path + '.json';
 
-    async function remoteRegister(code, vid) {
-      const r = await fetch(dbUrl('/referrals/' + code + '/' + vid), {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Date.now())
-      });
-      if (!r.ok) throw new Error('register failed: ' + r.status);
+    async function fbGet(path) {
+      const r = await fetch(dbUrl(path));
+      if (!r.ok) throw new Error('GET failed ' + r.status);
+      return await r.json();
     }
 
+    async function fbPut(path, data) {
+      const r = await fetch(dbUrl(path), {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+      });
+      if (!r.ok) throw new Error('PUT failed ' + r.status);
+      return true;
+    }
+
+    async function fbDelete(path) {
+      const r = await fetch(dbUrl(path), { method: 'DELETE' });
+      if (!r.ok) throw new Error('DELETE failed ' + r.status);
+      return true;
+    }
+
+    // ---- Firebase से सब load ----
+    async function loadAllFromFirebase() {
+      try {
+        const [p, s, c, g, cl] = await Promise.all([
+          fbGet('/prizes'),
+          fbGet('/settings'),
+          fbGet('/comments'),
+          fbGet('/gallery'),
+          fbGet('/claims')
+        ]);
+
+        // Prizes: object → array
+        if (p && typeof p === 'object') {
+          prizes = Object.values(p).filter(Boolean);
+        } else {
+          prizes = DEFAULT_PRIZES.slice();
+          await fbPut('/prizes', DEFAULT_PRIZES);
+        }
+
+        // Settings
+        if (s && typeof s === 'object') {
+          settings = Object.assign({}, DEFAULT_SETTINGS, s);
+        } else {
+          settings = Object.assign({}, DEFAULT_SETTINGS);
+          await fbPut('/settings', settings);
+        }
+
+        // Comments
+        if (c && typeof c === 'object') {
+          comments = Object.values(c).filter(Boolean);
+        } else {
+          comments = DEFAULT_COMMENTS.slice();
+          await fbPut('/comments', DEFAULT_COMMENTS);
+        }
+
+        // Gallery
+        if (g && Array.isArray(g)) {
+          gallery = g;
+        } else if (g && typeof g === 'object') {
+          gallery = Object.values(g).filter(Boolean);
+        } else {
+          gallery = [];
+        }
+
+        // Claims
+        if (cl && typeof cl === 'object') {
+          claims = Object.values(cl).filter(Boolean);
+        } else {
+          claims = [];
+        }
+
+        setSyncDot(true);
+        console.log('✅ Firebase से सब data load हो गया');
+      } catch (e) {
+        console.error('❌ Firebase load failed:', e);
+        setSyncDot(false);
+        // Fallback: default data दिखाओ (सिर्फ पहली बार)
+        if (prizes.length === 0) prizes = DEFAULT_PRIZES.slice();
+        if (comments.length === 0) comments = DEFAULT_COMMENTS.slice();
+        if (!settings.refReq) settings = Object.assign({}, DEFAULT_SETTINGS);
+        showToast('⚠️ Firebase connection failed - check rules', true);
+      }
+    }
+
+    // ---- Referral count ----
+    async function remoteRegister(code, vid) {
+      await fbPut('/referrals/' + code + '/' + vid, Date.now());
+    }
     async function remoteCount(code) {
-      const r = await fetch(dbUrl('/referrals/' + code));
-      if (!r.ok) throw new Error('count failed: ' + r.status);
-      const d = await r.json();
+      const d = await fbGet('/referrals/' + code);
       return d ? Object.keys(d).length : 0;
     }
-
     async function refreshRefCount() {
       try {
         myRefCount = await remoteCount(refCode);
-      } catch (e) {
-        console.warn('Referral count fetch failed:', e);
-      }
+        setSyncDot(true);
+      } catch (e) { setSyncDot(false); }
       renderProgress();
       renderSpinBtn();
     }
@@ -655,30 +737,9 @@
         await remoteRegister(incomingRef, visitorId);
         localStorage.setItem(KEYS.counted, incomingRef);
         try { window.history.replaceState({}, '', window.location.pathname); } catch (e) {}
-        showToast('✅ आपके दोस्त को Referral का credit मिल गया!');
+        showToast('✅ Referral दर्ज हो गया!');
       } catch (e) {
         showToast('Referral दर्ज नहीं हुआ: ' + e.message, true);
-      }
-    }
-
-    async function testFirebase() {
-      try {
-        const testUrl = dbUrl('/test/ping');
-        const r = await fetch(testUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(Date.now())
-        });
-        if (r.ok) {
-          const r2 = await fetch(dbUrl('/referrals/' + refCode));
-          const d = await r2.json();
-          const count = d ? Object.keys(d).length : 0;
-          showToast(`✅ Firebase OK! Your refs: ${count}`, false);
-        } else {
-          showToast('❌ Firebase write FAILED - check rules', true);
-        }
-      } catch (e) {
-        showToast('❌ Firebase error: ' + e.message, true);
       }
     }
 
@@ -698,24 +759,40 @@
       refCode = localStorage.getItem(KEYS.refCode) || genId('REF');
       localStorage.setItem(KEYS.refCode, refCode);
 
-      spins = getJSON(KEYS.spins, []);
-      claims = getJSON(KEYS.claims, []);
-      prizes = getJSON(KEYS.prizes, DEFAULT_PRIZES);
-      settings = Object.assign({}, DEFAULT_SETTINGS, getJSON(KEYS.settings, {}));
-      comments = getJSON(KEYS.comments, DEFAULT_COMMENTS);
-      gallery = getJSON(KEYS.gallery, []);
       usedSpins = parseInt(localStorage.getItem(KEYS.used) || '0', 10) || 0;
 
       $('spinBtn').addEventListener('click', onSpinClick);
 
+      // पहले Firebase से सब load
+      await loadAllFromFirebase();
       renderAll();
       startStars();
 
       await processRefURL();
       await refreshRefCount();
 
-      setInterval(refreshRefCount, 5000);
-      document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshRefCount(); });
+      // हर 5 सेकंड में live refresh
+      setInterval(async () => {
+        await loadAllFromFirebase();
+        renderAll();
+        await refreshRefCount();
+      }, 5000);
+
+      document.addEventListener('visibilitychange', async () => {
+        if (!document.hidden) {
+          await loadAllFromFirebase();
+          renderAll();
+          await refreshRefCount();
+        }
+      });
+
+      // Referrer name save
+      const nameInput = $('referrerName');
+      if (nameInput) {
+        nameInput.addEventListener('change', () => {
+          localStorage.setItem(KEYS.referrerName, nameInput.value.trim());
+        });
+      }
     }
 
     // ==========================================
@@ -756,7 +833,8 @@
 
       $('unlockedBadge').classList.toggle('hidden', spinsAvailable() < 1);
       $('referralLinkInput').value = getLink();
-      $('referrerName').value = getReferrerName();
+      const rn = $('referrerName');
+      if (rn && document.activeElement !== rn) rn.value = getReferrerName();
     }
 
     function renderWheel() {
@@ -815,10 +893,7 @@
 
     function renderGallery() {
       const galleryEl = $('imageGallery');
-      if (gallery.length === 0) {
-        galleryEl.innerHTML = '';
-        return;
-      }
+      if (gallery.length === 0) { galleryEl.innerHTML = ''; return; }
       galleryEl.innerHTML = gallery.map((img, i) => `
         <div class="gallery-item">
           <img src="${img}" alt="Gallery ${i+1}" onerror="this.src='https://via.placeholder.com/800x400/2b004d/FFD700?text=Image'">
@@ -904,7 +979,7 @@
       setTimeout(() => finishSpin(selected, isFree), 5300);
     }
 
-    function finishSpin(selected, isFree) {
+    async function finishSpin(selected, isFree) {
       spinning = false;
 
       if (!isFree) {
@@ -913,11 +988,14 @@
       }
 
       spins.push({ id: genId('S'), prize: selected.name, date: new Date().toISOString(), free: !!isFree });
-      setJSON(KEYS.spins, spins);
+      try { await fbPut('/spins/' + genId('SP'), { prize: selected.name, date: new Date().toISOString(), free: !!isFree }); } catch (e) {}
 
       const isTryAgain = /try again/i.test(selected.name);
       const p = prizes.find(x => x.id === selected.id);
-      if (p && p.qty > 0 && !isTryAgain) { p.qty--; setJSON(KEYS.prizes, prizes); }
+      if (p && p.qty > 0 && !isTryAgain) {
+        p.qty--;
+        try { await fbPut('/prizes/' + p.id, p); } catch (e) {}
+      }
 
       currentPrize = selected;
       $('winnerPrizeName').textContent = selected.name;
@@ -944,7 +1022,7 @@
       openModal('claimModal');
     }
 
-    function submitClaim(e) {
+    async function submitClaim(e) {
       e.preventDefault();
       const orderId = genId('ORD');
       const claim = {
@@ -961,8 +1039,14 @@
         date: new Date().toISOString(),
         status: 'Pending'
       };
-      claims.push(claim);
-      setJSON(KEYS.claims, claims);
+
+      try {
+        await fbPut('/claims/' + orderId, claim);
+        claims.push(claim);
+      } catch (e) {
+        showToast('❌ Claim save नहीं हुआ: ' + e.message, true);
+        return;
+      }
 
       closeModal('claimModal');
       $('claimForm').reset();
@@ -976,7 +1060,7 @@
         <div style="background:rgba(255,215,0,0.15); border:2px dashed var(--gold); border-radius:12px; padding:15px; margin:15px 0;">
           <p style="font-size:0.8rem; color:#aaa; margin-bottom:5px;">आपका Order ID:</p>
           <p style="font-size:1.3rem; font-weight:800; color:var(--gold); letter-spacing:2px;">${orderId}</p>
-          <p style="font-size:0.75rem; color:#aaa; margin-top:8px;">इस ID को संभाल कर रखें। इससे आप अपना ऑर्डर ट्रैक कर सकते हैं।</p>
+          <p style="font-size:0.75rem; color:#aaa; margin-top:8px;">इस ID को संभाल कर रखें।</p>
         </div>
         <button class="btn-submit" onclick="copyOrderId('${orderId}')" style="margin-bottom:8px;">📋 Copy Order ID</button>
         <button class="btn-submit" onclick="closeModal('successModal'); goToTrack('${orderId}')" style="background:#4CAF50;">📦 Track Order</button>
@@ -987,9 +1071,7 @@
     function copyOrderId(id) {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(id).then(() => showToast('📋 Order ID Copied!')).catch(() => fallbackCopy(id));
-      } else {
-        fallbackCopy(id);
-      }
+      } else fallbackCopy(id);
     }
 
     function goToTrack(orderId) {
@@ -1009,7 +1091,7 @@
 
     function copyLink() {
       const link = getLink();
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+      if (navigator.clipboard) {
         navigator.clipboard.writeText(link).then(() => showToast('📋 Link Copied!')).catch(() => fallbackCopy(link));
       } else fallbackCopy(link);
     }
@@ -1038,36 +1120,25 @@
       setTimeout(() => showToast('📸 Link Copied! Instagram में paste करें।'), 500);
     }
 
-    // Save referrer name on change
-    document.addEventListener('DOMContentLoaded', () => {
-      const nameInput = $('referrerName');
-      if (nameInput) {
-        nameInput.addEventListener('change', () => {
-          localStorage.setItem(KEYS.referrerName, nameInput.value.trim());
-        });
-      }
-    });
-
     // ==========================================
     // COMMENTS
     // ==========================================
-    function submitComment() {
+    async function submitComment() {
       const name = $('commentName').value.trim();
       const text = $('commentText').value.trim();
       if (!name || !text) return showToast('नाम और review दोनों भरें', true);
 
-      const comment = {
-        id: genId('CM'),
-        name,
-        text,
-        date: new Date().toISOString(),
-        approved: false
-      };
-      comments.push(comment);
-      setJSON(KEYS.comments, comments);
-      $('commentName').value = '';
-      $('commentText').value = '';
-      showToast('✅ Review submit हो गई! Admin approve करेगा।');
+      const id = genId('CM');
+      const comment = { id, name, text, date: new Date().toISOString(), approved: false };
+      try {
+        await fbPut('/comments/' + id, comment);
+        comments.push(comment);
+        $('commentName').value = '';
+        $('commentText').value = '';
+        showToast('✅ Review submit हो गई! Admin approve करेगा।');
+      } catch (e) {
+        showToast('❌ Review save नहीं हुई: ' + e.message, true);
+      }
     }
 
     // ==========================================
@@ -1077,7 +1148,7 @@
       const orderId = $('trackOrderId').value.trim().toUpperCase();
       if (!orderId) return showToast('Order ID डालें', true);
 
-      const claim = claims.find(c => c.id.toUpperCase() === orderId || c.mobile === orderId);
+      const claim = claims.find(c => (c.id || '').toUpperCase() === orderId || c.mobile === orderId);
       if (!claim) {
         $('trackStatus').innerHTML = '<p style="color:#ff6666; text-align:center;">❌ Order नहीं मिला। कृपया सही ID डालें।</p>';
         return;
@@ -1111,7 +1182,7 @@
       btn.classList.toggle('on', adminLightOn);
 
       if (adminLightOn) {
-        if (sessionStorage.getItem('dls_auth_v7') === 'true') openAdmin();
+        if (sessionStorage.getItem('dls_auth_v8') === 'true') openAdmin();
         else openModal('adminLoginModal');
       } else {
         closeModal('adminPanelModal');
@@ -1119,10 +1190,15 @@
       }
     }
 
+    function resetAdminLight() {
+      adminLightOn = false;
+      $('adminLightBtn').classList.remove('on');
+    }
+
     function adminLogin(e) {
       e.preventDefault();
       if ($('adminUser').value === ADMIN_CRED.u && $('adminPass').value === ADMIN_CRED.p) {
-        sessionStorage.setItem('dls_auth_v7', 'true');
+        sessionStorage.setItem('dls_auth_v8', 'true');
         closeModal('adminLoginModal');
         openAdmin();
       } else {
@@ -1154,6 +1230,8 @@
         <div class="stat-box"><div class="val">${claims.length}</div><div class="lbl">Claims</div></div>
         <div class="stat-box"><div class="val">${claims.filter(c => c.status === 'Pending').length}</div><div class="lbl">Pending</div></div>
       `;
+      const st = $('syncStatusText');
+      if (st) st.textContent = firebaseOnline ? '🟢 Firebase connected' : '🔴 Firebase disconnected';
     }
 
     function renderAdminPrizes() {
@@ -1178,9 +1256,9 @@
       $('prizeFormBox').classList.remove('hidden');
     }
 
-    function savePrize(e) {
+    async function savePrize(e) {
       e.preventDefault();
-      const id = $('prizeId').value;
+      const id = $('prizeId').value || genId('P');
       const name = $('prizeName').value.trim();
       const weight = parseInt($('prizeWeight').value) || 10;
       const qty = parseInt($('prizeQty').value);
@@ -1188,17 +1266,26 @@
       const active = $('prizeActive').value === 'true';
       const image = $('prizeImage').value.trim();
 
-      if (id) {
-        const p = prizes.find(x => x.id === id);
-        p.name = name; p.weight = weight; p.qty = q; p.active = active; p.image = image || p.image;
-      } else {
-        prizes.push({ id: genId('P'), name, weight, qty: q, active, emoji: '🎁', image: image || 'https://cdn-icons-png.flaticon.com/512/4213/4213179.png' });
+      const existing = prizes.find(x => x.id === id);
+      const prize = existing
+        ? Object.assign({}, existing, { name, weight, qty: q, active, image: image || existing.image })
+        : { id, name, weight, qty: q, active, emoji: '🎁', image: image || 'https://cdn-icons-png.flaticon.com/512/4213/4213179.png' };
+
+      try {
+        await fbPut('/prizes/' + id, prize);
+        if (existing) {
+          const idx = prizes.findIndex(x => x.id === id);
+          prizes[idx] = prize;
+        } else {
+          prizes.push(prize);
+        }
+        $('prizeFormBox').classList.add('hidden');
+        renderAdminPrizes();
+        renderWheel();
+        showToast('✅ Prize Saved (Live)');
+      } catch (err) {
+        showToast('❌ Save failed: ' + err.message, true);
       }
-      setJSON(KEYS.prizes, prizes);
-      $('prizeFormBox').classList.add('hidden');
-      renderAdminPrizes();
-      renderWheel();
-      showToast('✅ Prize Saved');
     }
 
     function editPrize(id) {
@@ -1213,12 +1300,17 @@
       $('prizeFormBox').classList.remove('hidden');
     }
 
-    function delPrize(id) {
+    async function delPrize(id) {
       if (!confirm('Delete this prize?')) return;
-      prizes = prizes.filter(p => p.id !== id);
-      setJSON(KEYS.prizes, prizes);
-      renderAdminPrizes();
-      renderWheel();
+      try {
+        await fbDelete('/prizes/' + id);
+        prizes = prizes.filter(p => p.id !== id);
+        renderAdminPrizes();
+        renderWheel();
+        showToast('✅ Deleted');
+      } catch (e) {
+        showToast('❌ Delete failed', true);
+      }
     }
 
     function renderAdminClaims() {
@@ -1238,9 +1330,18 @@
         </tr>
       `).join('') || '<tr><td colspan="4">No claims</td></tr>';
     }
-    function updateClaim(id, status) {
+
+    async function updateClaim(id, status) {
       const c = claims.find(x => x.id === id);
-      if (c) { c.status = status; setJSON(KEYS.claims, claims); renderAdminDash(); showToast('Updated'); }
+      if (!c) return;
+      c.status = status;
+      try {
+        await fbPut('/claims/' + id, c);
+        renderAdminDash();
+        showToast('✅ Updated (Live)');
+      } catch (e) {
+        showToast('❌ Update failed', true);
+      }
     }
 
     function renderAdminComments() {
@@ -1259,16 +1360,26 @@
       `).join('') || '<p style="text-align:center; color:#666;">No comments</p>';
     }
 
-    function approveComment(id) {
+    async function approveComment(id) {
       const c = comments.find(x => x.id === id);
-      if (c) { c.approved = !c.approved; setJSON(KEYS.comments, comments); renderAdminComments(); renderComments(); showToast('Updated'); }
+      if (!c) return;
+      c.approved = !c.approved;
+      try {
+        await fbPut('/comments/' + id, c);
+        renderAdminComments();
+        renderComments();
+        showToast('✅ Updated (Live)');
+      } catch (e) { showToast('❌ Failed', true); }
     }
 
-    function deleteComment(id) {
-      comments = comments.filter(x => x.id !== id);
-      setJSON(KEYS.comments, comments);
-      renderAdminComments();
-      renderComments();
+    async function deleteComment(id) {
+      try {
+        await fbDelete('/comments/' + id);
+        comments = comments.filter(x => x.id !== id);
+        renderAdminComments();
+        renderComments();
+        showToast('✅ Deleted');
+      } catch (e) { showToast('❌ Failed', true); }
     }
 
     function renderAdminGallery() {
@@ -1280,40 +1391,89 @@
       `).join('') || '<p style="text-align:center; color:#666;">No images</p>';
     }
 
-    function addGalleryImage() {
+    async function addGalleryImage() {
       const url = $('galleryImageUrl').value.trim();
       if (!url) return showToast('Image URL डालें', true);
-      gallery.push(url);
-      setJSON(KEYS.gallery, gallery);
-      $('galleryImageUrl').value = '';
-      renderAdminGallery();
-      renderGallery();
-      showToast('✅ Image Added');
+
+      try {
+        // पूरी array save करो ताकि order maintain रहे
+        const newGallery = gallery.concat([url]);
+        await fbPut('/gallery', newGallery);
+        gallery = newGallery;
+        $('galleryImageUrl').value = '';
+        renderAdminGallery();
+        renderGallery();
+        showToast('✅ Image Added (Live - सभी को दिखेगी)');
+      } catch (e) {
+        showToast('❌ Image save नहीं हुई: ' + e.message, true);
+      }
     }
 
-    function deleteGalleryImage(index) {
-      gallery.splice(index, 1);
-      setJSON(KEYS.gallery, gallery);
-      renderAdminGallery();
-      renderGallery();
+    async function deleteGalleryImage(index) {
+      const newGallery = gallery.slice();
+      newGallery.splice(index, 1);
+      try {
+        await fbPut('/gallery', newGallery);
+        gallery = newGallery;
+        renderAdminGallery();
+        renderGallery();
+        showToast('✅ Deleted');
+      } catch (e) { showToast('❌ Failed', true); }
     }
 
     function renderAdminSettings() {
       $('setTopImage').value = settings.topImage || '';
       $('setReferralReq').value = settings.refReq;
       $('setSpinEnabled').value = String(settings.spinEnabled);
-      $('setReferralImage').value = settings.referralImage || '';
     }
 
-    function saveSettings(e) {
+    async function saveSettings(e) {
       e.preventDefault();
-      settings.topImage = $('setTopImage').value.trim();
-      settings.refReq = Math.max(1, parseInt($('setReferralReq').value) || 1);
-      settings.spinEnabled = $('setSpinEnabled').value === 'true';
-      settings.referralImage = $('setReferralImage').value.trim();
-      setJSON(KEYS.settings, settings);
-      renderAll();
-      showToast('✅ Settings Saved');
+      const newSettings = {
+        topImage: $('setTopImage').value.trim() || DEFAULT_SETTINGS.topImage,
+        refReq: Math.max(1, parseInt($('setReferralReq').value) || 1),
+        spinEnabled: $('setSpinEnabled').value === 'true'
+      };
+      try {
+        await fbPut('/settings', newSettings);
+        settings = newSettings;
+        renderAll();
+        showToast('✅ Settings Saved (Live)');
+      } catch (err) {
+        showToast('❌ Save failed: ' + err.message, true);
+      }
+    }
+
+    // ==========================================
+    // FIREBASE TESTS
+    // ==========================================
+    async function testFirebase() {
+      const st = $('syncStatusText');
+      if (st) st.textContent = 'Testing...';
+      try {
+        await fbPut('/test/ping', Date.now());
+        const r = await fbGet('/referrals/' + refCode);
+        const count = r ? Object.keys(r).length : 0;
+        setSyncDot(true);
+        if (st) st.textContent = '🟢 Firebase OK! Your refs: ' + count;
+        showToast('✅ Firebase write + read working!');
+      } catch (e) {
+        setSyncDot(false);
+        if (st) st.textContent = '🔴 Firebase error: ' + e.message;
+        showToast('❌ Firebase error: ' + e.message, true);
+      }
+    }
+
+    async function forceSyncAll() {
+      try {
+        await fbPut('/prizes', prizes);
+        await fbPut('/settings', settings);
+        await fbPut('/comments', comments);
+        await fbPut('/gallery', gallery);
+        showToast('✅ सब data Firebase में sync हो गया!');
+      } catch (e) {
+        showToast('❌ Sync failed: ' + e.message, true);
+      }
     }
 
     // ==========================================
@@ -1355,11 +1515,9 @@
       const w = canvas.width, h = canvas.height;
       const parts = [];
       const colors = ['#FFD700', '#FF0000', '#0047AB', '#8A2BE2', '#FFF'];
-
       for (let i = 0; i < 100; i++) {
         parts.push({ x: Math.random() * w, y: -20, vx: (Math.random() - 0.5) * 4, vy: Math.random() * 4 + 2, size: Math.random() * 6 + 3, color: colors[Math.floor(Math.random() * colors.length)], life: 1 });
       }
-
       confettiOn = true;
       let frames = 0;
       function anim() {
